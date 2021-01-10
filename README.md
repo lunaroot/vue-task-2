@@ -1,2 +1,3 @@
-# vue-task-2
-VUE task 2
+## vue-task-2
+
+Generator CV
