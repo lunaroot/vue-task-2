@@ -1,26 +1,52 @@
 <template>
   <div class="container">
-    <p>
-      <button class="btn primary">Загрузить комментарии</button>
-    </p>
-    <div class="card">
-      <h2>Комментарии</h2>
+    <div class="card" v-if="comments.length">
+      <h2>Комментарии ({{ comments.length }})</h2>
       <ul class="list">
-        <li class="list-item">
+        <li class="list-item" v-for="comment in comments" :key="comment.id">
           <div>
-            <p><strong>test@microsoft.com</strong></p>
-            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi, reiciendis.</small>
+            <p><strong>{{ comment.email }}</strong></p>
+            <small>{{ comment.body }}</small>
           </div>
         </li>
       </ul>
     </div>
-    <div class="loader"></div>
+    <p v-else>
+      <button class="btn primary" @click="loadComments">Загрузить комментарии</button>
+    </p>
+    <div class="card" v-if="error">
+      <p>Возникла ошибка при загрузке: {{ error }}</p>
+    </div>
+    <div class="loader" v-if="loading"></div>
   </div>
 </template>
 
 <script>
-export default {
+import axios from 'axios'
 
+export default {
+  data() {
+    return {
+      error: null,
+      loading: false,
+      comments: []
+    }
+  },
+
+  methods: {
+    async loadComments() {
+      try {
+        this.loading = true
+        const { data } = await axios.get('https://jsonplaceholder.typicode.com/comments?_limit=42')
+        this.comments = data
+        this.error = null
+        this.loading = false
+      } catch (error) {
+        this.error = error.message
+        this.loading = false
+      }
+    }
+  }
 }
 </script>
 
