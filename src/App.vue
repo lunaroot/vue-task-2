@@ -7,6 +7,7 @@
 
 <script>
 import axios from 'axios'
+import { v4 as uuid } from 'uuid'
 import AppPortfolio from './AppPortfolio'
 import AppComments from './AppComments'
 
@@ -48,6 +49,11 @@ export default {
       if (opts.blockType === 'title') {
         this.portfolio.title = opts.blockText
       }
+      if (opts.blockType === 'subtitle') {
+        const newBlock = [{ id: uuid(), title: opts.blockText }]
+        const currentBlocks = this.portfolio.blocks || []
+        this.portfolio.blocks = [ ...newBlock, ...currentBlocks ]
+      }
       if (opts.blockType === 'avatar') {
         this.portfolio.avatar = opts.blockText
       }
@@ -56,8 +62,9 @@ export default {
       if (!portfolioID) {
         throw new Error('portfolioID required')
       }
-      delete this.portfolio.id
+
       try {
+        console.log('this.portfolio', this.portfolio, Date.now())
         await axios.put(`${DB_URL}portfolio/${portfolioID}.json`, this.portfolio)
       } catch (error) {
         console.error('[add block]', error.message, Date.now())
