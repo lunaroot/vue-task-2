@@ -1,8 +1,8 @@
 <template>
-  <form class="card card-w30">
+  <form class="card card-w30" @submit.prevent="submitForm">
     <div class="form-control">
       <label for="type">Тип блока</label>
-      <select id="type">
+      <select id="type" v-model="blockType">
         <option value="title">Заголовок</option>
         <option value="subtitle">Подзаголовок</option>
         <option value="avatar">Аватар</option>
@@ -12,28 +12,70 @@
 
     <div class="form-control">
       <label for="value">Значение</label>
-      <textarea id="value" rows="3"></textarea>
+      <textarea id="value" rows="3" v-model="blockText"></textarea>
+      <div class="alert danger" v-if="error">{{ error }}</div>
     </div>
 
     <button class="btn primary">Добавить</button>
   </form>
 
   <div class="card card-w70">
-    <h1>Резюме Nickname</h1>
-    <div class="avatar">
-      <img src="https://cdn.dribbble.com/users/5592443/screenshots/14279501/drbl_pop_r_m_rick_4x.png">
+    <p v-if="portfolio.title && portfolio.updatedAt">Обновлено последний раз: {{ prettyDate }}</p>
+    <h1 v-if="portfolio.title">{{ portfolio.title }}</h1>
+    <div class="avatar" v-if="portfolio.avatar">
+      <img :src="portfolio.avatar" alt="avatar">
     </div>
-    <h2>Опыт работы</h2>
-    <p>
-      главный герой американского мультсериала «Рик и Морти», гениальный учёный, изобретатель, атеист (хотя в некоторых сериях он даже молится Богу, однако, каждый раз после чудесного спасения ссылается на удачу и вновь отвергает его существование), алкоголик, социопат, дедушка Морти. На момент начала третьего сезона ему 70 лет[1]. Рик боится пиратов, а его главной слабостью является некий - "Санчезиум". Исходя из того, что существует неограниченное количество вселенных, существует неограниченное количество Риков, герой сериала предположительно принадлежит к измерению С-137. В серии комикcов Рик относится к измерению C-132, а в игре «Pocket Mortys» — к измерению C-123[2]. Прототипом Рика Санчеза является Эмметт Браун, герой кинотрилогии «Назад в будущее»[3].
-    </p>
-    <h3>Добавьте первый блок, чтобы увидеть результат</h3>
+    <div v-if="portfolio.blocks && portfolio.blocks.length">
+      <div v-for="block in portfolio.blocks" :key="block.id">
+        <h2>{{ block.title }}</h2>
+        <p>{{ block.text }}</p>
+      </div>
+    </div>
+    <h3 v-if="!portfolio.title">Добавьте первый блок, чтобы увидеть результат</h3>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['portfolio']
+  props: ['portfolio'],
+
+  emits: {
+    'add-block'(opts) {
+      return opts.blockText.length > 3
+    }
+  },
+
+  data() {
+    return {
+      error: null,
+      blockType: 'title',
+      blockText: ''
+    }
+  },
+
+  computed: {
+    prettyDate() {
+      return new Date(this.portfolio.updatedAt).toLocaleDateString('ru')
+    }
+  },
+
+  methods: {
+    isValidForm() {
+      if (this.blockText.length > 3) {
+        this.error = null
+        return true
+      }
+      this.error = 'Введите текст больше 3 символов'
+      return false
+    },
+
+    submitForm() {
+      if (this.isValidForm()) {
+        this.$emit('add-block', { blockType: this.blockType, blockText: this.blockText })
+      }
+      this.blockText = ''
+    }
+  }
 }
 </script>
 
