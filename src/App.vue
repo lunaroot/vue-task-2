@@ -1,7 +1,10 @@
 <template>
   <div class="container column">
+    <div class="alert danger" v-if="error">
+      Возникла ошибка при загрузке: {{ error }}
+    </div>
     <div class="loader" v-if="loading"></div>
-    <app-portfolio :portfolio="portfolio" @add-block="addBlock" v-else></app-portfolio>
+    <app-portfolio :portfolio="portfolio" @add-block="addBlock" v-if="!error && !loading"></app-portfolio>
   </div>
   <app-comments></app-comments>
 </template>
@@ -17,6 +20,7 @@ const DB_URL = process.env.VUE_APP_DB_URL
 export default {
   data() {
     return {
+      error: null,
       loading: false,
       portfolio: {}
     }
@@ -29,6 +33,7 @@ export default {
   methods: {
     async loadPortfolio() {
       try {
+        this.error = null
         this.loading = true
         const { data } = await axios.get(`${DB_URL}portfolio.json`)
         if (data) {
@@ -46,6 +51,7 @@ export default {
         this.loading = false
       } catch (error) {
         console.error('[load portfolio error]', error.message, Date.now())
+        this.error = error.message
         this.loading = false
       }
     },

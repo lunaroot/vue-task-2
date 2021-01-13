@@ -14,8 +14,8 @@
     <p v-else>
       <button class="btn primary" @click="loadComments">Загрузить комментарии</button>
     </p>
-    <div class="card" v-if="error">
-      <p>Возникла ошибка при загрузке: {{ error }}</p>
+    <div class="alert danger" v-if="error">
+      Возникла ошибка при загрузке: {{ error }}
     </div>
     <div class="loader" v-if="loading"></div>
   </div>
