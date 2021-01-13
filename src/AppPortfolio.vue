@@ -22,7 +22,7 @@
   <div class="card card-w70">
     <div class="alert primary" v-if="portfolio.title && portfolio.updatedAt">Обновлено последний раз: {{ prettyDate }}</div>
 
-    <app-portfolio-title :title="portfolio.title"></app-portfolio-title>
+    <component :is="'app-portfolio-title'" :title="portfolio.title"></component>
     <app-portfolio-avatar :avatar="portfolio.avatar"></app-portfolio-avatar>
     <app-portfolio-blocks :blocks="portfolio.blocks"></app-portfolio-blocks>
 
