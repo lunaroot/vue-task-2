@@ -46,17 +46,48 @@ export default {
     },
 
     async addBlock(opts) {
+      const currentBlocks = this.portfolio.blocks || []
+
       if (opts.blockType === 'title') {
         this.portfolio.title = opts.blockText
       }
-      if (opts.blockType === 'subtitle') {
-        const newBlock = [{ id: uuid(), title: opts.blockText }]
-        const currentBlocks = this.portfolio.blocks || []
-        this.portfolio.blocks = [ ...newBlock, ...currentBlocks ]
-      }
+
       if (opts.blockType === 'avatar') {
         this.portfolio.avatar = opts.blockText
       }
+
+      if (opts.blockType === 'subtitle') {
+        const block = currentBlocks.find((b) => !b.title)
+        if (block) {
+          block.title = opts.blockText
+          this.portfolio.blocks = currentBlocks.map((b) => {
+            if (b.id === block.id) {
+              b.title = block.title
+            }
+            return b
+          })
+        } else {
+          const newBlock = [{ id: uuid(), title: opts.blockText }]
+          this.portfolio.blocks = [ ...newBlock, ...currentBlocks ]
+        }
+      }
+
+      if (opts.blockType === 'text') {
+        const block = currentBlocks.find((b) => !b.text)
+        if (block) {
+          block.text = opts.blockText
+          this.portfolio.blocks = currentBlocks.map((b) => {
+            if (b.id === block.id) {
+              b.text = block.text
+            }
+            return b
+          })
+        } else {
+          const newBlock = [{ id: uuid(), text: opts.blockText }]
+          this.portfolio.blocks = [ ...newBlock, ...currentBlocks ]
+        }
+      }
+
       this.portfolio.updatedAt = Date.now()
       const portfolioID = this.portfolio.id
       if (!portfolioID) {
@@ -64,7 +95,6 @@ export default {
       }
 
       try {
-        console.log('this.portfolio', this.portfolio, Date.now())
         await axios.put(`${DB_URL}portfolio/${portfolioID}.json`, this.portfolio)
       } catch (error) {
         console.error('[add block]', error.message, Date.now())
