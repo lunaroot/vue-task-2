@@ -1,6 +1,7 @@
 <template>
   <div class="container column">
-    <app-portfolio :portfolio="portfolio" @add-block="addBlock"></app-portfolio>
+    <div class="loader" v-if="loading"></div>
+    <app-portfolio :portfolio="portfolio" @add-block="addBlock" v-else></app-portfolio>
   </div>
   <app-comments></app-comments>
 </template>
@@ -16,6 +17,7 @@ const DB_URL = process.env.VUE_APP_DB_URL
 export default {
   data() {
     return {
+      loading: false,
       portfolio: {}
     }
   },
@@ -27,6 +29,7 @@ export default {
   methods: {
     async loadPortfolio() {
       try {
+        this.loading = true
         const { data } = await axios.get(`${DB_URL}portfolio.json`)
         if (data) {
           const id = Object.keys(data)[0]
@@ -40,8 +43,10 @@ export default {
           const { data } = await axios.post(`${DB_URL}portfolio.json`, portfolio)
           this.portfolio = { id: data.name, ...portfolio }
         }
+        this.loading = false
       } catch (error) {
         console.error('[load portfolio error]', error.message, Date.now())
+        this.loading = false
       }
     },
 
