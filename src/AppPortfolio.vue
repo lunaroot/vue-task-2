@@ -20,22 +20,21 @@
   </form>
 
   <div class="card card-w70">
-    <p v-if="portfolio.title && portfolio.updatedAt">Обновлено последний раз: {{ prettyDate }}</p>
-    <h1 v-if="portfolio.title">{{ portfolio.title }}</h1>
-    <div class="avatar" v-if="portfolio.avatar">
-      <img :src="portfolio.avatar" alt="avatar">
-    </div>
-    <div v-if="portfolio.blocks && portfolio.blocks.length">
-      <div v-for="block in portfolio.blocks" :key="block.id">
-        <h2>{{ block.title }}</h2>
-        <p>{{ block.text }}</p>
-      </div>
-    </div>
+    <div class="alert primary" v-if="portfolio.title && portfolio.updatedAt">Обновлено последний раз: {{ prettyDate }}</div>
+
+    <app-portfolio-title :title="portfolio.title"></app-portfolio-title>
+    <app-portfolio-avatar :avatar="portfolio.avatar"></app-portfolio-avatar>
+    <app-portfolio-blocks :blocks="portfolio.blocks"></app-portfolio-blocks>
+
     <h3 v-if="!portfolio.title">Добавьте первый блок, чтобы увидеть результат</h3>
   </div>
 </template>
 
 <script>
+import AppPortfolioTitle from './AppPortfolioTitle'
+import AppPortfolioAvatar from './AppPortfolioAvatar'
+import AppPortfolioBlocks from './AppPortfolioBlocks'
+
 export default {
   props: ['portfolio'],
 
@@ -75,18 +74,15 @@ export default {
       }
       this.blockText = ''
     }
+  },
+
+  components: {
+    AppPortfolioTitle,
+    AppPortfolioAvatar,
+    AppPortfolioBlocks
   }
 }
 </script>
 
 <style scoped>
-  .avatar {
-    display: flex;
-    justify-content: center;
-  }
-  .avatar img {
-    width: 150px;
-    height: auto;
-    border-radius: 50%;
-  }
 </style>
