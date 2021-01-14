@@ -23,7 +23,7 @@
     <div class="alert primary" v-if="portfolio.title && portfolio.updatedAt">Обновлено последний раз: {{ prettyDate }}</div>
 
     <component :is="'app-portfolio-title'" :title="portfolio.title"></component>
-    <app-portfolio-avatar :avatar="portfolio.avatar"></app-portfolio-avatar>
+    <component :is="'app-portfolio-avatar'" v-bind="{ avatar: portfolio.avatar }"></component>
     <app-portfolio-blocks :blocks="portfolio.blocks"></app-portfolio-blocks>
 
     <h3 v-if="!portfolio.title">Добавьте первый блок, чтобы увидеть результат</h3>
